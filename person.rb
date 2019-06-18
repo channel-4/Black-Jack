@@ -7,10 +7,11 @@ class Person
   # 手札開示
   def show_hand
     # ex) Player: 4, Q
-    puts "#{@name} : #{@hand.join(', ')}"
+    print "#{@name} : #{@hand.join(', ')}"
+    puts " - score: #{score}"
   end
 
-  # 点数計算
+  # 点数
   # TODO Aが一枚の想定なので山札が増えた場合変更しなければならない
   def score
     # 計算用に操作するのでコピー
@@ -39,8 +40,13 @@ class Person
       sum += card.to_i
     end
 
-    puts "- score: #{sum}"
+    return sum
   end
+
+  def num_of_cards
+    return @hand.length
+  end
+
 end
 
 class Player < Person
@@ -48,6 +54,11 @@ class Player < Person
     super
     @name = 'Player'
   end
+
+  def stand_or_hit(score)
+    status
+  end
+
 end
 
 class Dealer < Person
@@ -59,7 +70,7 @@ class Dealer < Person
   # ディラーの初期の手札開示は片方のみ, 点数は公開しない
   def show_ini_hand
     # ex) Dealer : 4, *
-    puts "#{@name} : #{@hand[0]}, *"
-    puts "- score: *"
+    print "#{@name} : #{@hand[0]}, *"
+    puts " - score: *"
   end
 end

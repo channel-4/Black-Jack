@@ -16,12 +16,21 @@ dealer = Dealer.new(stack.pull_out(2))
 
 # 手札開示 (ディーラーは片方のみ)
 player.show_hand
-player.score
 dealer.show_ini_hand
-# 降りるまで引く
 
-# 勝負!
+# TODO デバッグ用にここに挟めてるので消す
+game.show_result(player, dealer)
+game.end_game
 
-# 山札開示, 勝ち判定
+# ブラックジャックの場合, 自動で勝負に出る
+if player_score === 21
+  game.show_result(player, dealer)
+  game.end_game
+end
 
-# ゲーム終了
+# 引く, または勝負に出る
+player.stand_or_hit(player_score)
+
+# 結果発表, ゲーム終了
+game.show_result(player, dealer)
+game.end_game
