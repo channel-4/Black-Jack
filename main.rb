@@ -18,18 +18,21 @@ dealer = Dealer.new(stack.pull_out(2))
 player.show_hand
 dealer.show_ini_hand
 
-# TODO デバッグ用にここに挟めてるので消す
-game.show_result(player, dealer)
-game.end_game
-
 # ブラックジャックの場合, 自動で勝負に出る
-if player_score === 21
+if player.score === 21
   game.show_result(player, dealer)
   game.end_game
 end
 
-# 引く, または勝負に出る
-player.stand_or_hit(player_score)
+# standを希望するまで引く
+while player.hit?
+  player.hit(stack.pull_out(1))
+end
+
+# dialerのターン
+while dealer.hit?
+  dealer.hit(stack.pull_out(1))
+end
 
 # 結果発表, ゲーム終了
 game.show_result(player, dealer)

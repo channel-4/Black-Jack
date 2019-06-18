@@ -46,7 +46,6 @@ class Person
   def num_of_cards
     return @hand.length
   end
-
 end
 
 class Player < Person
@@ -55,10 +54,30 @@ class Player < Person
     @name = 'Player'
   end
 
-  def stand_or_hit(score)
-    status
+  # hitの希望を募る
+  def hit?
+    # 21点超えてる場合は必ずfalse
+    if score >= 21
+      return false
+    end
+
+    # hitするかしないか促す
+    puts ''
+    print 'hit? (Type "1" and push Enter) : '
+
+    input = gets
+    # タイプされた値取得 1ならtrue
+    if input.chomp! == '1'
+      return true
+    end
+    return false
   end
 
+  def hit(card)
+    # 一枚追加して開示
+    @hand.push(card.join(''))
+    show_hand
+  end
 end
 
 class Dealer < Person
@@ -72,5 +91,21 @@ class Dealer < Person
     # ex) Dealer : 4, *
     print "#{@name} : #{@hand[0]}, *"
     puts " - score: *"
+  end
+
+  def hit?
+    puts ''
+    # 17点超えてる場合は必ずfalse
+    if score >= 17
+      return false
+    end
+    return true
+  end
+
+  def hit (card)
+    puts '# Dealer Hit'
+    # 一枚追加して開示
+    @hand.push(card.join(''))
+    show_hand
   end
 end
