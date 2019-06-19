@@ -2,49 +2,91 @@ class Person
   def initialize(ini_hand)
     @name
     @hand = ini_hand
+    @score = 0
+    @sub_score = 0
+    # 2枚初期で引かれるのでセットする
+    setScore
   end
+
+  attr_reader :score
 
   # 手札開示
   def show_hand
     # ex) Player: 4, Q
     print "#{@name} : #{@hand.join(', ')}"
-    puts " - score: #{score}"
-  end
 
-  # 点数
-  # TODO Aが一枚の想定なので山札が増えた場合変更しなければならない
-  def score
-    # 計算用に操作するのでコピー
-    hand = @hand
-    # Aが存在するとき(index: 要素位置)
-    if index = hand.index('A')
-      # 削除
-      hand.delete_at(index)
-      # 末尾に追加
-      hand.push('A')
+    # スコア出力 (subが存在する場合は2つ出力)
+
+    # ex) - score: 13
+    print " - score: #{@score}"
+
+    if @sub_score != 0
+       # ex) - score: 19(9) 2 pattern
+       print "(#{@sub_score}) 2 pattern"
     end
 
+    # 改行挟める
+    puts ''
+  end
+
+  # 点数更新 (Aがある場合で11点が可能な場合は2パターン返す)
+  def setScore
+
+    # 計算するにあたりマークは落とす
+    # ex) ['♤2', '♡Q'... ] => [2, 9]
+    hand_only_num = []
+    @hand.each do |n|
+      hand_only_num << n.slice(1..2)
+    end
+
+    # Aが1枚以上存在するとき(index: 要素位置)
+    if index = hand_only_num.index('A')
+      # 削除
+      hand_only_num.delete_at(index)
+      # 末尾に追加(=> 計算用に実質的に末尾に移動させる)
+      hand_only_num.push('A')
+    end
+
+    # sum: 通常時のスコア, sub: 2パターン存在する場合の片方のスコア
     sum = 0
-    hand.each do |card|
-      # 10点換算
+    sub = 0
+    # 手札のカードを1枚ずつチェックして加算
+    hand_only_num.each_with_index do |card, index|
+      # 10点換算軍
       if card == 'J' || card == 'Q' || card == 'K'
         card = '10'
       end
 
-      # より点数が近い方を採用する
+      # Aは1点か11点
       if card == 'A'
-        # 11点換算した時に21点超えてた場合1点採用
-        # 違う場合は11点換算で計算
-        (sum + 11 > 21) ? card = '1' : card = '11'
+        # 基本1点換算
+        card = '1'
+
+        # 配列の末尾のAかつoverしない場合は11点採用
+        # Playerが1点のパターンの合計を把握しやすいようにsubスコアも準備
+        if hand_only_num.length-1 == index && sum + 11 <=  21
+          card = '11'
+          sub = sum + 1
+        end
       end
       sum += card.to_i
     end
 
-    return sum
+    @score = sum
+    @sub_score = sub
   end
 
   def num_of_cards
     return @hand.length
+  end
+
+  def hit(card)
+    # 一枚追加
+    @hand.push(card.join(''))
+    # 点数更新
+    setScore
+    # 手札開示(コンソール出力)
+    show_hand
   end
 end
 
@@ -57,9 +99,7 @@ class Player < Person
   # hitの希望を募る
   def hit?
     # 21点超えてる場合は必ずfalse
-    if score >= 21
-      return false
-    end
+    return false if @score >= 21
 
     # hitするかしないか促す
     puts ''
@@ -71,12 +111,6 @@ class Player < Person
       return true
     end
     return false
-  end
-
-  def hit(card)
-    # 一枚追加して開示
-    @hand.push(card.join(''))
-    show_hand
   end
 end
 
@@ -96,16 +130,12 @@ class Dealer < Person
   def hit?
     puts ''
     # 17点超えてる場合は必ずfalse
-    if score >= 17
-      return false
-    end
+    return false if @score >= 17
     return true
   end
 
   def hit (card)
     puts '# Dealer Hit'
-    # 一枚追加して開示
-    @hand.push(card.join(''))
-    show_hand
+    super(card)
   end
 end
