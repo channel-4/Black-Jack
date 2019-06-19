@@ -46,9 +46,9 @@ class Game
     end
 
     # スコアで決着がつかない場合は枚数比較
-    if player.num_of_cards > dealer.num_of_cards
+    if player.num_of_cards < dealer.num_of_cards
       return 1
-    elsif player.num_of_cards < dealer.num_of_cards
+    elsif player.num_of_cards > dealer.num_of_cards
       return -1
     end
 
