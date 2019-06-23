@@ -14,8 +14,4 @@ class Stack
   def pull_out(num)
     @stack.shift(num)
   end
-
-  def a
-    @stack
-  end
 end

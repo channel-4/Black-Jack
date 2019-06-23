@@ -33,7 +33,7 @@ class Person
   def setScore
 
     # 計算するにあたりマークは落とす
-    # ex) ['♤2', '♡Q'... ] => [2, 9]
+    # ex) ['♤2', '♡Q'... ] => [2, Q]
     hand_only_num = []
     @hand.each do |n|
       hand_only_num << n.slice(1..2)
